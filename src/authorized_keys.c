@@ -12,6 +12,7 @@
 #include <pwd.h>
 
 #define KEYDIR "/etc/ssh-public-keys.d"
+#define BUFSIZE 2048
 
 /*
  * Check if a given keyfile is secure. A keyfile is considered unsecure if
@@ -90,12 +91,12 @@ int is_keyfile_secure(int fd, uid_t uid, const char *filename, char *err, size_t
   return 0;
 }
 
-void cat(int fd) {
-  char buffer[1024];
-  ssize_t nbytes;
+void cat(FILE* f) {
+  char buffer[BUFSIZE];
+  size_t rbytes;
 
-  while((nbytes = read(fd, buffer, sizeof(buffer))) > 0) {
-    write(1, buffer, nbytes);
+  while(rbytes = fread(buffer, sizeof(char), BUFSIZE, f)) {
+    fwrite(buffer, sizeof(char), rbytes, stdout);
   }
 }
 
@@ -117,7 +118,7 @@ int main(int argc, char** argv) {
   struct passwd* user;
   char keyfile[PATH_MAX];
   char error[1024];
-  int fd;
+  FILE* f;
 
   if(argc > 1) {
     username = argv[1];
@@ -135,19 +136,19 @@ int main(int argc, char** argv) {
 
   snprintf(keyfile, PATH_MAX, "%s/%s.pub", KEYDIR, user->pw_name);
 
-  if((fd = open(keyfile, O_NOFOLLOW | O_RDONLY)) == -1) {
+  if((f = fopen(keyfile, "r")) == NULL) {
     /* if there is no file or we cannot open it, make sure we do not fail and
      * openssh can continue with the normal authorized_keys behaviour */
     return 0;
   }
 
-  if(is_keyfile_secure(fd, user->pw_uid, keyfile, error, sizeof(error)) == 0) {
-    cat(fd);
-    close(fd);
+  if(is_keyfile_secure(fileno(f), user->pw_uid, keyfile, errbuf, sizeof(error)) == 0) {
+    cat(f);
+    fclose(f);
   }
   else {
     fprintf(stderr, "authorized_keys: %s\n", error);
-    close(fd);
+    fclose(f);
     return -1;
   }
 
