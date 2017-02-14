@@ -11,7 +11,8 @@
 #include <limits.h>
 #include <pwd.h>
 
-#define KEYDIR "/etc/ssh-public-keys.d"
+#include "config.h"
+
 #define BUFSIZE 2048
 
 /*
@@ -102,9 +103,9 @@ void cat(FILE* f) {
 
 void usage(void) {
   fprintf(stderr,
-    "usage: authorized_keys (-h |  --help)\n"
-    "usage: authorized_keys --version\n"
-    "usage: authorized_keys <user>\n"
+    "usage: "PROGRAM" (-h |  --help)\n"
+    "usage: "PROGRAM" --version\n"
+    "usage: "PROGRAM" <user>\n"
     "\n"
     "retrieve the public keys of the specified user\n"
     "\n"
@@ -137,11 +138,11 @@ int main(int argc, char** argv) {
       exit(EXIT_SUCCESS);
     }
     else if(strcmp(argv[i], "--version") == 0) {
-      printf("authorized_keys version 0.1.0\n");
+      printf(PROGRAM " version " VERSION "\n");
       exit(EXIT_SUCCESS);
     }
     else {
-      fprintf(stderr, "authorized_keys: unknown argument: %s\n", argv[i]);
+      fprintf(stderr, PROGRAM ": unknown argument: %s\n", argv[i]);
       exit(EXIT_FAILURE);
     }
   }
@@ -154,7 +155,7 @@ int main(int argc, char** argv) {
     username = argv[i];
   }
   else {
-    fprintf(stderr, "authorized_keys: wrong number of arguments\n");
+    fprintf(stderr, PROGRAM ": wrong number of arguments\n");
     exit(EXIT_FAILURE);
   }
 
@@ -178,7 +179,7 @@ int main(int argc, char** argv) {
     fclose(f);
   }
   else {
-    fprintf(stderr, "authorized_keys: %s\n", errbuf);
+    fprintf(stderr, PROGRAM" : %s\n", errbuf);
     fclose(f);
     return -1;
   }
