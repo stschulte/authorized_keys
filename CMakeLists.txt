@@ -19,3 +19,6 @@ endif()
 
 configure_file( "${PROJECT_SOURCE_DIR}/src/config.h.in" "${PROJECT_SOURCE_DIR}/src/config.h" )
 add_executable(authorized_keys src/authorized_keys.c)
+
+install(TARGETS authorized_keys RUNTIME DESTINATION bin)
+install(DIRECTORY DESTINATION ${CMAKE_INSTALL_KEYDIR})
