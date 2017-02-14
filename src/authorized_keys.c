@@ -117,7 +117,7 @@ int main(int argc, char** argv) {
 
   struct passwd* user;
   char keyfile[PATH_MAX];
-  char error[1024];
+  char errbuf[1024];
   FILE* f;
 
   if(argc > 1) {
@@ -142,12 +142,12 @@ int main(int argc, char** argv) {
     return 0;
   }
 
-  if(is_keyfile_secure(fileno(f), user->pw_uid, keyfile, errbuf, sizeof(error)) == 0) {
+  if(is_keyfile_secure(fileno(f), user->pw_uid, keyfile, errbuf, sizeof(errbuf)) == 0) {
     cat(f);
     fclose(f);
   }
   else {
-    fprintf(stderr, "authorized_keys: %s\n", error);
+    fprintf(stderr, "authorized_keys: %s\n", errbuf);
     fclose(f);
     return -1;
   }
