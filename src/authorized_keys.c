@@ -102,6 +102,8 @@ void cat(FILE* f) {
 
 void usage(void) {
   fprintf(stderr,
+    "usage: authorized_keys (-h |  --help)\n"
+    "usage: authorized_keys --version\n"
     "usage: authorized_keys <user>\n"
     "\n"
     "retrieve the public keys of the specified user\n"
@@ -113,20 +115,49 @@ void usage(void) {
 }
 
 int main(int argc, char** argv) {
-  char* username;
+  char* username = NULL;
 
   struct passwd* user;
   char keyfile[PATH_MAX];
   char errbuf[1024];
+  int i = 1;
   FILE* f;
 
-  if(argc > 1) {
-    username = argv[1];
+  while(i < argc) {
+    if(*argv[i] != '-')
+      break;
+
+    if(strcmp(argv[i], "--") == 0) {
+      i++;
+      break;
+    }
+
+    if(strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
+      usage();
+      exit(EXIT_SUCCESS);
+    }
+    else if(strcmp(argv[i], "--version") == 0) {
+      printf("authorized_keys version 0.1.0\n");
+      exit(EXIT_SUCCESS);
+    }
+    else {
+      fprintf(stderr, "authorized_keys: unknown argument: %s\n", argv[i]);
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  if(argc < 2) {
+    usage();
+    exit(EXIT_SUCCESS);
+  }
+  else if(i == argc - 1) {
+    username = argv[i];
   }
   else {
-    usage();
-    return 0;
+    fprintf(stderr, "authorized_keys: wrong number of arguments\n");
+    exit(EXIT_FAILURE);
   }
+
 
   user = getpwnam(username);
   if(user == NULL) {
