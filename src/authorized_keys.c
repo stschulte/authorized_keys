@@ -96,7 +96,7 @@ void cat(FILE* f) {
   char buffer[BUFSIZE];
   size_t rbytes;
 
-  while(rbytes = fread(buffer, sizeof(char), BUFSIZE, f)) {
+  while((rbytes = fread(buffer, sizeof(char), BUFSIZE, f)) != 0) {
     fwrite(buffer, sizeof(char), rbytes, stdout);
   }
 }
