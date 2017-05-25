@@ -162,7 +162,7 @@ int main(int argc, char** argv) {
 
   user = getpwnam(username);
   if(user == NULL) {
-    fprintf(stderr, "authorized_keys: user %s could not be found\n", username);
+    fprintf(stderr, PROGRAM ": user %s could not be found\n", username);
     return 1;
   }
 

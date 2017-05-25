@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.8.11)
-project (authorized_keys C)
+project (lookup-ssh-pubkey C)
 
-SET(PROGRAM_NAME "authorized_keys")
+SET(PROGRAM_NAME "lookup-ssh-pubkey")
 SET(VERSION_MAJOR 0)
 SET(VERSION_MINOR 1)
 SET(VERSION_PATCH 0)
@@ -18,7 +18,7 @@ else()
 endif()
 
 configure_file( "${PROJECT_SOURCE_DIR}/src/config.h.in" "${PROJECT_SOURCE_DIR}/src/config.h" )
-add_executable(authorized_keys src/authorized_keys.c)
+add_executable(lookup-ssh-pubkey src/lookup-ssh-pubkey.c)
 
-install(TARGETS authorized_keys RUNTIME DESTINATION bin)
+install(TARGETS lookup-ssh-pubkey RUNTIME DESTINATION bin)
 install(DIRECTORY DESTINATION ${CMAKE_INSTALL_KEYDIR})

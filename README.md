@@ -1,4 +1,4 @@
-# authorized_keys
+# lookup-ssh-pubkey
 
 ## Background
 
@@ -20,13 +20,13 @@ directory and use a custom command to retrieve the keys.
 
 ## How to use
 
-The `authorized_keys` executable can be used as a local
+The `lookup-ssh-pubkey` executable can be used as a local
 lookup method to retrieve public authorized ssh keys.
 
 It is intended to be used by openssh. In `sshd_config` just
 specify
 
-    AuthorizedKeysCommand /path/to/authorized_keys
+    AuthorizedKeysCommand /path/to/lookup-ssh-pubkey
     AuthorizedKeysCommandUser nobody
 
 The command will check if there is a file
@@ -39,14 +39,14 @@ normale `.ssh/authorized_keys` file.
 ## Security considerations
 
 The public keys should be **readable** for everyone as the
-`authorized_keys` should normally run as user nobody.
+`lookup-ssh-pubkey` should normally run as user nobody.
 The keyfiles itself should only be writeable by the owner and
 should be owned by either root or the corresponding user the
 keyfile belongs to. This is important so no user can write
 its own public key to the `authorized_keys` file of a different
 user.
 
-The `authorized_keys` will raise an error if this condition is
+The `lookup-ssh-pubkey` will raise an error if this condition is
 not met. The same goes for each parent directory. If a parent
 directory would be writeable by someone else, an attacker would
 be able to remove a key (or a part of the directory tree) and
@@ -55,10 +55,12 @@ condition will also be tested.
 
 ## How to build
 
-to build the binary, you need cmake and gcc installed. Than run
+you can build and install the package locally with the following
+commands
 
     mkdir build
     cd build
     cmake ..
     make
+    make install
 
