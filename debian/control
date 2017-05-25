@@ -1,0 +1,14 @@
+Source: lookup-ssh-pubkey
+Maintainer: Stefan Schulte <stschulte@posteo.de>
+Section: admin
+Priority: optional
+Standards-Version: 3.9.4
+Build-Depends: debhelper (>=9)
+
+Package: lookup-ssh-pubkey
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Lookup public keys from a fixed directory
+ Tool to be used by sshd to lookup authorized keys for users
+ from a fixed location instead of ~user/.ssh/authorized_keys
+
