@@ -22,3 +22,5 @@ add_executable(lookup-ssh-pubkey src/lookup-ssh-pubkey.c)
 
 install(TARGETS lookup-ssh-pubkey RUNTIME DESTINATION bin)
 install(DIRECTORY DESTINATION ${CMAKE_INSTALL_KEYDIR})
+
+install(DIRECTORY man DESTINATION share)

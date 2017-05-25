@@ -1,0 +1,28 @@
+.TH "lookup-ssh-pubkey" 1 2017-05-25 "lookup-ssh-pubkey"
+.SH NAME
+lookup-ssh-pubkey \- retrieve public keys from central directory
+.SH SYNOPSIS
+.BR "lookup-ssh-pubkey " { " \-\-help " | " \-\-version " }
+.sp
+.B lookup-ssh-pubkey
+.I username
+.SH DESCRIPTION
+\fBlookup-ssh-pubkey\fR is a simple command to retrieve authorized SSH public
+keys from a central directory instead of the user's homedirectory.
+This makes it easy to distribute public keys for user's that are not present
+locally (like ActiveDirectory or LDAP users).
+It is intended to be referenced from within your ssh configuration.
+.SH OPTIONS
+.TP
+.B \-\-help
+displays a help message and exists.
+.TP
+.B \-\-version
+displays the version and exists.
+.TP
+.I username
+The username of which the public keys should be retrieved.
+.SH SEE ALSO
+.BR sshd_config (5)
+.SH AUTHORS
+Stefan Schulte <stschulte@posteo.de>
