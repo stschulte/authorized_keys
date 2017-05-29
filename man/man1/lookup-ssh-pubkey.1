@@ -12,6 +12,22 @@ keys from a central directory instead of the user's homedirectory.
 This makes it easy to distribute public keys for user's that are not present
 locally (like ActiveDirectory or LDAP users).
 It is intended to be referenced from within your ssh configuration.
+.P
+Example configuration of sshd_config
+.in +4n
+.nf
+.sp
+AuthorizedKeysCommand /usr/bin/lookup-ssh-pubkey
+AuthorizedKeysCommandUser nobody
+.fi
+.in
+.P
+This will cause the SSH daemon to execute
+.B lookup-ssh-pubkey
+as user
+.B nobody
+to retrieve authorized keys before falling back to read authorized keys from the
+user's homedirectory.
 .SH OPTIONS
 .TP
 .B \-\-help
@@ -22,7 +38,18 @@ displays the version and exists.
 .TP
 .I username
 The username of which the public keys should be retrieved.
-.SH SEE ALSO
+.SH "EXIT STATUS"
+.TP
+.B 0
+Successful program execution. The user could be found and the keyfile (if present) could be printed
+.TP
+.B 1
+Error while retrieving user information or keyfile insecure
+.SH FILES
+.TP
+.I /etc/ssh-public-keys.d
+Default directory to look for authorized public keys.
+.SH "SEE ALSO"
 .BR sshd_config (5)
-.SH AUTHORS
+.SH AUTHOR
 Stefan Schulte <stschulte@posteo.de>
