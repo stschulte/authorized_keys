@@ -16,9 +16,12 @@
 #define BUFSIZE 2048
 
 /*
- * Check if a given keyfile is secure. A keyfile is considered unsecure if
- * it is not owned by the user or by root. It is also unsecure if the
- * keyfile is writeable by group or other.
+ * Check if a given keyfile is secure.
+ *
+ * A keyfile is considered secure, if only root (or the user the key belongs
+ * to) can write to file. It is considerd unsecure if any other user or group
+ * can write to it (reading the keyfile is no problem, since we are talking
+ * public keys here).
  *
  * The same check will be done for every parent directory. If a
  * parentdirectory would be writeable by an attacker, this user would be
@@ -27,7 +30,7 @@
  *
  * Returns 0 on success and -1 on failure
  */
-int is_keyfile_secure(int fd, uid_t uid, const char *filename, char *err, size_t errlen) {
+int is_keyfile_secure(int fd, const char *filename, uid_t expected_uid, char *err, size_t errlen) {
   struct stat st;
   struct passwd* owner;
   char* parentdir;
@@ -48,7 +51,7 @@ int is_keyfile_secure(int fd, uid_t uid, const char *filename, char *err, size_t
     return -1;
   }
 
-  if(st.st_uid != 0 && st.st_uid != uid) {
+  if(st.st_uid != 0 && st.st_uid != expected_uid) {
     if((owner = getpwuid(st.st_uid)) != NULL)
       snprintf(err, errlen, "%s is owned by unexpected user %s", path, owner->pw_name);
     else
@@ -77,7 +80,7 @@ int is_keyfile_secure(int fd, uid_t uid, const char *filename, char *err, size_t
       snprintf(err, errlen, "unable to stat directory %s", parentdir);
       return -1;
     }
-    else if(st.st_uid !=0 && st.st_uid != uid) {
+    else if(st.st_uid !=0 && st.st_uid != expected_uid) {
       snprintf(err, errlen, "bad ownership for directory %s", parentdir);
       return -1;
     }
@@ -116,13 +119,14 @@ void usage(void) {
 }
 
 int main(int argc, char** argv) {
-  char* username = NULL;
+  char* username = NULL;   /* the username we want to retrieve the keys for */
 
-  struct passwd* user;
-  char keyfile[PATH_MAX];
+  struct passwd* user;     /* the user info if present */
+  char keyfile[PATH_MAX];  /* path to the potential keyfile */
+  FILE* f;                 /* file handle for the keyfile */
+
   char errbuf[1024];
   int i = 1;
-  FILE* f;
 
   while(i < argc) {
     if(*argv[i] != '-')
@@ -174,7 +178,7 @@ int main(int argc, char** argv) {
     return EXIT_SUCCESS;
   }
 
-  if(is_keyfile_secure(fileno(f), user->pw_uid, keyfile, errbuf, sizeof(errbuf)) == 0) {
+  if(is_keyfile_secure(fileno(f), keyfile, user->pw_uid, errbuf, sizeof(errbuf)) == 0) {
     cat(f);
     fclose(f);
   }
