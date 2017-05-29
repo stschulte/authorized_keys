@@ -163,7 +163,7 @@ int main(int argc, char** argv) {
   user = getpwnam(username);
   if(user == NULL) {
     fprintf(stderr, PROGRAM ": user %s could not be found\n", username);
-    return 1;
+    return EXIT_FAILURE;
   }
 
   snprintf(keyfile, PATH_MAX, "%s/%s.pub", KEYDIR, user->pw_name);
@@ -171,7 +171,7 @@ int main(int argc, char** argv) {
   if((f = fopen(keyfile, "r")) == NULL) {
     /* if there is no file or we cannot open it, make sure we do not fail and
      * openssh can continue with the normal authorized_keys behaviour */
-    return 0;
+    return EXIT_SUCCESS;
   }
 
   if(is_keyfile_secure(fileno(f), user->pw_uid, keyfile, errbuf, sizeof(errbuf)) == 0) {
@@ -179,10 +179,10 @@ int main(int argc, char** argv) {
     fclose(f);
   }
   else {
-    fprintf(stderr, PROGRAM" : %s\n", errbuf);
+    fprintf(stderr, PROGRAM ": %s\n", errbuf);
     fclose(f);
-    return -1;
+    return EXIT_FAILURE;
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
